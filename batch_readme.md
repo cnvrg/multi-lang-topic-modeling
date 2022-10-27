@@ -12,7 +12,7 @@ In order to train this model with your data, you would need to provide one folde
 
    In the `Batch` task:
     *  Under the `input_path` parameter provide the path to the input file including the prefix you provided in the `S3 Connector`, it should look like:
-       `/input/s3_connector/<prefix>/input_data.csv`
+       `/input/s3_connector/<prefix>/input_file.csv`
 
 **NOTE**: You can use prebuilt data examples paths that are already provided
 

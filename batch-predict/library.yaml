@@ -1,18 +1,14 @@
----
-title: Multi Lang Inference
+title: Multi Lang Topic Batch
 version: 1.0.0
-description: "Library to deploy the QnA generator capable of generating QnAs from input text"
+description: selecting the most number of optimizing topics based on cohercnce score through LDA algorithm
 icon: python
 
 author: "cnvrg"
 author_email: "libhub@cnvrg.io"
 
 tags:
-  - inference
-
-kind: webservice
-
-command: python3 predict.py
+  - training
+command: python3 batch.py
 
 requirements:
   cpu: 3.5
@@ -20,18 +16,27 @@ requirements:
   gpu: 0
   hpu: 0
 
-image: cnvrg/cnvrg:v5.0
-
+image: python:3.8
 language: python3
 
 arguments:
-  accept_files: false
-  file_name: predict.py
-  function_name: predict
-  prep_file: ''
-  prep_function: ''
-  input_example:
-    txt: text
-  input_schema:
-    txt: text
-  output_schema: {}
+  - key: input_file
+    type: 'categorical'
+    values:
+      - '/input/wikipedia_connector/wiki_output.csv'
+  - key: model_file
+    type: 'categorical'
+    values:
+      - "/input/train/lda.sav"
+  - key: topic_word_cnt
+    type: 'discrete'
+    values:
+      - "10"
+  - key: dictionary_path
+    type: 'categorical'
+    values:
+      - "/input/train/corp_dict_file.sav"
+  - key: model_results_path
+    type: 'categorical'
+    values:
+      - "/input/train/model_results.csv"

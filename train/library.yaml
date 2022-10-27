@@ -1,6 +1,6 @@
-title: Multi Lang LDA
+title: Multi Lang Topic Train
 version: 1.0.0
-description: selecting the most number of optimizing topics based on cohercnce score through LDA algorithm
+description: training and deploying a NMF model & then using it to create topic models for wikipedia articles.
 icon: python
 
 author: "cnvrg"

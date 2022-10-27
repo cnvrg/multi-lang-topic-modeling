@@ -10,10 +10,7 @@ In order to train this model with your data, you would need to provide one folde
     * Under the `bucketname` parameter provide the bucket name of the data
     * Under the `prefix` parameter provide the main path to where the training file and model/tokenizer folders are located
 
-   In the `LDA` task:
-    *  Under the `input_path` parameter provide the path to the input file including the prefix you provided in the `S3 Connector`, it should look like:
-       `/input/s3_connector/<prefix>/topic_modelling_data.csv`
-   In the `NMF` task:
+   In the `train` task:
     *  Under the `input_path` parameter provide the path to the input file including the prefix you provided in the `S3 Connector`, it should look like:
        `/input/s3_connector/<prefix>/topic_modelling_data.csv`
 

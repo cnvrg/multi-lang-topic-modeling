@@ -86,7 +86,7 @@ tasks:
 
     type: exec
 
-    library: multi-lang-lda
+    library: multi-lang-topic-train
     library_version: 1.0.0
 
     command: python3 lda.py

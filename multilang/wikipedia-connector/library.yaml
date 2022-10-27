@@ -1,0 +1,28 @@
+title: Multi Lang Wiki Connector
+version: 1.0.0
+description: Extract cleaned text from any wikipedia article in the form of a CSV file
+icon: python
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+tags:
+  - training
+
+command: python3 multi.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: python:3.8
+
+language: python3
+
+arguments:
+  - key: 'topics'
+    type: 'categorical'
+    values:
+      - "predator,alien,planet,earth"

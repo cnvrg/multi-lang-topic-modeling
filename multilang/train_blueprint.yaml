@@ -1,0 +1,216 @@
+---
+title: Multi Lang Topic Model
+version: 1.0.0 
+description: "Training Topic Modelling on a custom dataset and deploying it"
+long_description: "Training on custom dataset provided in tabluar format. The dataset is split into train and val datasets and converted to pytorch format. Then after training an endpoint is deployed for inference using the trained model."
+
+author: "cnvrg"
+author_email: "libhub@cnvrg.io"
+
+tags:
+  - training
+
+tasks:
+  - title: S3 Connector
+    top: 300
+    left: 0
+
+    # Type must be according to the flow task conventions (data, exec, deploy)
+    type: exec
+
+    # The library data
+    library: s3-connector
+    library_version: 1.0.0
+
+    # The flattened library parameters (in this case we have training library)
+    command: python s3-connector.py
+
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: cnvrg:v5.0
+    language: python3
+
+    # The "arguments" property changes to "params", rest remains the same.
+    # Params in the blueprint yaml can be used to override the arguments in the library.
+    params:
+      - key: endpoint
+        type: 'categorical'
+        values:
+          - 'http://s3.amazonaws.com download'
+      - key: bucketname
+        type: 'categorical'
+        values:
+          - 'libhub-readme'
+      - key: localdir
+        type: 'categorical'
+        values:
+          - '/cnvrg'
+      - key: prefix
+        type: 'categorical'
+        values:
+          - 'multi_lang_modeling/'
+
+  - title: Wikipedia Connector
+    top: 100
+    left: 0
+
+    type: exec
+
+    # The library data
+    library: multi-lang-wiki-connector
+    library_version: 1.0.0
+
+    command: python3 multi.py
+
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: python:3.8
+    language: python3
+    params:
+      - key: 'topics'
+        type: 'categorical'
+        values:
+          - "https://en.wikipedia.org/wiki/Age_of_Wonders,https://it.wikipedia.org/wiki/Legge_Mammì,https://zh.wikipedia.org/wiki/国家"
+
+  - title: Train
+    top: 200
+    left: 200
+
+    type: exec
+
+    library: multi-lang-lda
+    library_version: 1.0.0
+
+    command: python3 lda.py
+
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: cnvrg/cnvrg:v5.0
+    language: python3
+
+    params:
+      - key: training_file
+        type: 'categorical'
+        values:
+          - '/input/wikipedia_connector/wiki_output.csv'
+      - key: topic_size
+        type: 'discrete'
+        values:
+          - "8.00,15.00,2.00"
+      - key: chunk_size
+        type: 'discrete'
+        values:
+          - "100"
+      - key: passes
+        type: 'discrete'
+        values:
+          - "1"
+      - key: alpha
+        type: 'categorical'
+        values:
+          - "symmetric"
+      - key: eta
+        type: 'categorical'
+        values:
+          - "symmetric"
+
+          
+  - title: Batch-Predict
+    top: 300
+    left: 400
+
+    type: exec
+
+    library: multi-lang-topic-batch
+    library_version: 1.0.0
+
+    command: python3 batch.py
+
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: cnvrg/cnvrg:v5.0
+    language: python3
+
+    params:
+      - key: input_file
+        type: 'categorical'
+        values:
+          - '/input/wikipedia_connector/wiki_output.csv'
+      - key: model_file
+        type: 'categorical'
+        values:
+          - "/input/train/lda_model.sav"
+      - key: topic_word_cnt
+        type: 'discrete'
+        values:
+          - "5"
+      - key: dictionary_path
+        type: 'categorical'
+        values:
+          - "/input/train/corp_dict.sav"
+      - key: model_results_path
+        type: 'categorical'
+        values:
+          - "/input/train/model_results.csv"
+
+  - title: Inference
+    top: 300
+    left: 600
+
+    type: deploy
+
+    library: multi-lang-inference
+    library_version: 1.0.0
+
+    command: python3 predict.py
+    kind: webservice
+
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: cnvrg/cnvrg:v5.0
+    language: python3
+
+    accept_files: false
+    file_name: predict.py 
+    function_name: predict
+    prep_file: '' 
+    prep_function: '' 
+    input_example:
+      txt: text
+    input_schema:
+      txt: text
+    output_schema: {}
+      
+relations:
+  - from: S3 Connector
+    to: Train
+  - from: Wikipedia Connector
+    to: Train
+  - from: Train
+    to: Batch-Predict
+  - from: Wikipedia Connector
+    to: Batch-Predict
+  - from: Train
+    to: Inference
+  - from: Batch-Predict
+    to: Inference

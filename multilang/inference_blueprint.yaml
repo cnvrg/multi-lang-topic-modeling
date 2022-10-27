@@ -1,0 +1,52 @@
+title: Multi Lang Model Inference
+version: 1.0.0
+description: Create topic models from text which contain the most common words in that topic
+long_description: A topic model is a type of statistical model for discovering the abstract topics that occur in a collection of documents. Its a frequently used text-mining tool for discovery of hidden semantic structures in a text body& supports multiple languages.
+author: "cnvrg"
+author_email: "libhub@cnvrg.io"
+
+tags:
+  - inference
+
+tasks:
+  - title: Inference
+    top: 400
+    left: 300
+ 
+    type: deploy
+
+    library: multi-lang-inference
+    library_version: 1.0.0
+
+    command: python3 predict.py
+    kind: webservice
+    requirements:
+      cpu: 3.5
+      memory: 8
+      gpu: 0
+      hpu: 0
+
+    image: cnvrg/cnvrg:v5.0
+    language: python3
+
+    accept_files: false
+
+    file_name: predict.py
+    flask_config:
+    - key: DEBUG
+      value: 'True'
+    - key: TESTING
+      value: 'True'
+    function_name: predict
+    gunicorn_config:
+      - key: workers
+        value: '1'
+    prep_file: ''
+    prep_function: ''
+    input_example:
+      txt: text
+    input_schema:
+      txt: text
+    output_schema: {}
+      
+relations: []

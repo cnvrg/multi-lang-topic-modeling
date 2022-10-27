@@ -1,0 +1,46 @@
+title: Multi Lang LDA
+version: 1.0.0
+description: selecting the most number of optimizing topics based on cohercnce score through LDA algorithm
+icon: python
+
+author: "cnvrg"
+author_email: "libhub@cnvrg.io"
+
+tags:
+  - training
+command: python3 lda.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: cnvrg/cnvrg:v5.0
+language: python3
+
+arguments:
+  - key: input_file
+    type: 'categorical'
+    values:
+      - '/input/s3_connector/topic_modeling/topic_modeling_data.csv'
+  - key: topic_size
+    type: 'categorical'
+    values:
+      - "8.00,15.00,2.00"
+  - key: chunk_size
+    type: 'discrete'
+    values:
+      - "100"
+  - key: passes
+    type: 'discrete'
+    values:
+      - "1"
+  - key: alpha
+    type: 'categorical'
+    values:
+      - "symmetric"
+  - key: eta
+    type: 'categorical'
+    values:
+      - "symmetric"
